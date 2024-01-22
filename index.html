@@ -35,18 +35,30 @@
       // Subscribe to the MQTT topic
       client.subscribe('example');
       // Set up callback for incoming messages
-      client.onMessageArrived = function (message) {
-      // Update A-Frame entities based on MQTT data
-      const mqttText = document.getElementById('mqttText');
-      const displayText = 'MQTT Data: ' + message.payloadString;
-      mqttText.setAttribute('text', 'value', displayText);
-      mqttText.setAttribute('align', 'center');
-      mqttText.setAttribute('scale', '0.7 0.7 0.7'); 
-      }},
+      client.onMessageArrived = function (message) 
+    {
+        const payloadObject = JSON.parse(message.payloadString);
+        const text = payloadObject.text;
+        const timestamp = payloadObject.time;
+        const mqttData = `Note: ${text}\nTime: ${timestamp}`
+        console.log("Received MQTT message:", mqttData);
+        updateAFrameEntities(mqttData);
+    };
+    },
       onFailure: function (responseObject) {
         console.log("Failed to connect to MQTT broker: " + responseObject.errorMessage);
       }
     }); 
+  function updateAFrameEntities(data) {
+const mqttText = document.getElementById('mqttText');
+    if (mqttText) 
+    {
+        mqttText.setAttribute('align', 'center');
+        mqttText.setAttribute('scale', '0.9 0.9 0.9'); 
+        //mqttText.setAttribute('position', '0 1 -5'); 
+        mqttText.setAttribute('value', data);
+    }
+}
   </script>
 </body>
 </html>
